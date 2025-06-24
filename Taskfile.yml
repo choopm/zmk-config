@@ -1,0 +1,60 @@
+version: '3'
+
+set: [pipefail] # exit if any pipe component fails
+shopt: [globstar] # support double star glob paths: **/*.go
+
+# include env vars
+dotenv: ['.env']
+
+tasks:
+  default:
+    desc: Alias for task build
+    cmds:
+      - task: build
+
+  build:
+    desc: Builds boards and shields locally
+    vars:
+      # this is the same matrix as in build.yaml (TODO: parse it from there)
+      BOARDS: ["nrfmicro_13"]
+      SHIELDS: ["redox_left", "redox_right", "settings_reset"]
+    cmds:
+      - mkdir -p build
+      - task: west-init
+      - west update
+      - for:
+          matrix:
+            BOARD:
+              ref: .BOARDS
+            SHIELD:
+              ref: .SHIELDS
+        task: west-build
+        vars:
+          BOARD: "{{ .ITEM.BOARD }}"
+          SHIELD: "{{ .ITEM.SHIELD }}"
+
+  west-init:
+    internal: true
+    status:
+      - test -d .west
+    cmds:
+      - west init -l config
+
+  west-build:
+    internal: true
+    vars:
+      BOARD: "{{ .BOARD }}"
+      SHIELD: "{{ .SHIELD }}"
+    cmds:
+      - |
+        docker run --rm -it \
+          --workdir /workspace \
+          --user ubuntu \
+          -v $(pwd):/workspace \
+          zmkfirmware/zmk-build-arm:stable \
+          bash -c "
+            mkdir -p ~/build &&
+            west zephyr-export &&
+            west build -s zmk/app -d ~/build -b {{ .BOARD }} -- -DZMK_CONFIG=/workspace/config -DSHIELD={{ .SHIELD }} &&
+            mv ~/build/zephyr/zmk.uf2 /workspace/build/{{ .SHIELD }}-{{ .BOARD }}.uf2
+          "

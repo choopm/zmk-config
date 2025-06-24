@@ -1,0 +1,25 @@
+{
+	"name": "zmk-config",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "workspace",
+	"workspaceFolder": "/workspace",
+	"remoteUser": "ubuntu",
+	"containerUser": "ubuntu",
+	"onCreateCommand": "bash .devcontainer/post-install.sh",
+	"features": {
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {
+			"version": "latest"
+		}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-vscode.cpptools",
+				"davidanson.vscode-markdownlint",
+				"ms-azuretools.vscode-docker",
+				"stkb.rewrap",
+				"task.vscode-task"
+			]
+		}
+	}
+}

@@ -19,3 +19,8 @@ Connect a cable, put both halves into bootloader mode and copy the uf2 files to 
 When just updating keymaps only the left half needs to be reflashed.
 
 ![Redox](redox.jpg)
+
+## Building locally
+
+There is a [Taskfile](Taskfile.yml) included which allows building locally
+inside a dev container started using the provided configuration.
