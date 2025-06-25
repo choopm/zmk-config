@@ -24,3 +24,20 @@ When just updating keymaps only the left half needs to be reflashed.
 
 There is a [Taskfile](Taskfile.yml) included which allows building locally
 inside a dev container started using the provided configuration.
+
+## FAQ
+
+* How to see the battery level of the second half?
+* * [zmkbat.sh](https://github.com/choopm/dotfiles/blob/main/bin/zmkbat.sh)
+
+## Known issues
+
+### Dongle mode
+
+This includes a configuration for using a
+[keyboard dongle](https://zmk.dev/docs/development/hardware-integration/dongle).
+Unfortunately this did not work out of the box using a nrf52840_mdk_usb_dongle.
+
+It is unclear at this point what might be the issue.
+Probably the peripherals are not pairing with the dongle.
+This config remains commented out for now.

@@ -20,7 +20,17 @@
 include:
   - board: nrfmicro_13
     shield: redox_left
+    # cmake-args: -DCONFIG_ZMK_SPLIT=y -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n # dongle mode
   - board: nrfmicro_13
     shield: redox_right
+    # cmake-args: -DCONFIG_ZMK_SPLIT=y -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n # dongle mode
   - board: nrfmicro_13
     shield: settings_reset
+
+  #   # dongle (currenly not working - not pairing with dongle)
+  # - board: nrf52840_mdk_usb_dongle
+  #   shield: redox_dongle
+  #   cmake-args: -DCONFIG_BUILD_OUTPUT_UF2=y
+  # - board: nrf52840_mdk_usb_dongle
+  #   shield: settings_reset
+  #   cmake-args: -DCONFIG_BUILD_OUTPUT_UF2=y

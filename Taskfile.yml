@@ -22,6 +22,15 @@ tasks:
       - mkdir -p build
       - task: west-init
       - west update
+      - task: build-split
+      # - task: build-dongle # (currently not working - not pairing with dongle)
+
+  build-split:
+    internal: true
+    vars:
+      BOARDS: ["nrfmicro_13"]
+      SHIELDS: ["redox_left", "redox_right", "settings_reset"]
+    cmds:
       - for:
           matrix:
             BOARD:
@@ -32,6 +41,21 @@ tasks:
         vars:
           BOARD: "{{ .ITEM.BOARD }}"
           SHIELD: "{{ .ITEM.SHIELD }}"
+          # CMAKE_ARGS: "-DCONFIG_ZMK_SPLIT=y -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n" # dongle mode
+
+  build-dongle:
+    internal: true
+    cmds:
+      - task: west-build
+        vars:
+          BOARD: "nrf52840_mdk_usb_dongle"
+          SHIELD: "redox_dongle"
+          CMAKE_ARGS: "-DCONFIG_BUILD_OUTPUT_UF2=y"
+      - task: west-build
+        vars:
+          BOARD: "nrf52840_mdk_usb_dongle"
+          SHIELD: "settings_reset"
+          CMAKE_ARGS: "-DCONFIG_BUILD_OUTPUT_UF2=y"
 
   west-init:
     internal: true
@@ -45,6 +69,7 @@ tasks:
     vars:
       BOARD: "{{ .BOARD }}"
       SHIELD: "{{ .SHIELD }}"
+      CMAKE_ARGS: "{{ .CMAKE_ARGS }}"
     cmds:
       - |
         docker run --rm -it \
@@ -55,6 +80,6 @@ tasks:
           bash -c "
             mkdir -p ~/build &&
             west zephyr-export &&
-            west build -s zmk/app -d ~/build -b {{ .BOARD }} -- -DZMK_CONFIG=/workspace/config -DSHIELD={{ .SHIELD }} &&
+            west build -s zmk/app -d ~/build -b {{ .BOARD }} -- -DZMK_CONFIG=/workspace/config -DSHIELD={{ .SHIELD }} {{ .CMAKE_ARGS }} &&
             mv ~/build/zephyr/zmk.uf2 /workspace/build/{{ .SHIELD }}-{{ .BOARD }}.uf2
           "
